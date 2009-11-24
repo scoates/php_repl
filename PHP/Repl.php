@@ -43,7 +43,13 @@ class PHP_Repl
      * @var string
      */
     private $rc_file;
-
+    
+    /**
+     * Command line arguments
+     *
+     * @var array
+     */
+    private $arguments;
 
     /**
      * Constructor
@@ -55,6 +61,12 @@ class PHP_Repl
         $this->input   = fopen('php://stdin', 'r');
         $this->rc_file = isset($_ENV['PHPREPLRC']) ? $_ENV['PHPREPLRC'] :
             $_ENV['HOME'] . '/.phpreplrc';
+            
+        if ($_SERVER['argc'] > 1) {
+            $this->arguments = array_slice($_SERVER['argv'], 1);
+        } else {
+            $this->arguments = array();
+        }
 
         $defaults      = $this->defaultOptions();
         $this->options = array_merge($defaults, $options);
@@ -160,16 +172,12 @@ class PHP_Repl
         $code  = '';
         $done  = false;
         $lines = 0;
-        static $shifted;
-        if (!$shifted) {
-            // throw away argv[0]
-            array_shift($_SERVER['argv']);
-            $shifted = true;
-        }
         do {
             $prompt = $lines > 0 ? '> ' : $this->options['prompt'];
-            if (count($_SERVER['argv'])) {
-                $line = array_shift($_SERVER['argv']);
+            if ($this->arguments) {
+                $line = array_shift($this->arguments);
+                echo "{$prompt}{$line} //from CLI\n";
+                $line .= "\n";
             } elseif ($this->options['readline']) {
                 $line = readline($prompt);
             } else {
