@@ -59,8 +59,8 @@ class PHP_Repl
     public function __construct($options = array())
     {
         $this->input   = fopen('php://stdin', 'r');
-        $this->rc_file = isset($_ENV['PHPREPLRC']) ? $_ENV['PHPREPLRC'] :
-            $_ENV['HOME'] . '/.phpreplrc';
+        $this->rc_file = getenv('PHPREPLRC') ? getenv('PHPREPLRC') :
+            getenv('HOME') . '/.phpreplrc';
             
         if ($_SERVER['argc'] > 1) {
             $this->arguments = array_slice($_SERVER['argv'], 1);
@@ -74,7 +74,12 @@ class PHP_Repl
         if ($this->options['readline'] &&
             is_readable($this->options['readline_hist'])) {
             array_map('readline_add_history',
-                      file($this->options['readline_hist']));
+                      file($this->options['readline_hist'], 
+                           FILE_IGNORE_NEW_LINES|FILE_SKIP_EMPTY_LINES));
+        }
+
+        if ($this->options['autorun']) {
+            $this->run();
         }
 
         if ($this->options['autorun']) {
@@ -92,10 +97,10 @@ class PHP_Repl
         $defaults = array('prompt'        => 'php> ',
                           'autorun'       => false,
                           'readline'      => true,
-                          'readline_hist' => $_ENV['HOME'] .
+                          'readline_hist' => getenv('HOME') .
                           '/.phprepl_history');
 
-        if (!function_exists('readline') || $_ENV['TERM'] == 'dumb') {
+        if (!function_exists('readline') || getenv('TERM') == 'dumb') {
             $defaults['readline'] = false;
         }
 
