@@ -17,6 +17,7 @@
  */
 
 require_once 'PHP/Repl.php';
-$_repl = new PHP_Repl(array('autorun' => true));
+$__repl__ = new PHP_Repl();
+$__repl__->run();
 
 ?>

@@ -75,14 +75,6 @@ class PHP_Repl
             is_readable($this->options['readline_hist'])) {
             readline_read_history($this->options['readline_hist']);
         }
-
-        if ($this->options['autorun']) {
-            $this->run();
-        }
-
-        if ($this->options['autorun']) {
-            $this->run();
-        }
     }
 
     /**
@@ -93,7 +85,6 @@ class PHP_Repl
     private function defaultOptions()
     {
         $defaults = array('prompt'        => 'php> ',
-                          'autorun'       => false,
                           'readline'      => true,
                           'readline_hist' => getenv('HOME') .
                           '/.phprepl_history');
@@ -103,11 +94,7 @@ class PHP_Repl
         }
 
         if (is_readable($this->rc_file)) {
-            $rc_defaults = parse_ini_file($this->rc_file);
-            if (isset($rc_defaults['autorun'])) {
-                unset($rc_defaults['autorun']);
-            }
-            $defaults = array_merge($defaults, $rc_defaults);
+            $defaults = array_merge($defaults, parse_ini_file($this->rc_file));
         }
         return $defaults;
     }
@@ -138,10 +125,13 @@ class PHP_Repl
     /**
      * Run the main loop
      *
+     * @param array $scope Scope to pass into the REPL.
+     *
      * @return void
      */
-    public function run()
+    public function run(array $scope = array())
     {
+        extract($scope);
         ob_start();
         while (true) {
             // inner loop is to escape from stacked output buffers
