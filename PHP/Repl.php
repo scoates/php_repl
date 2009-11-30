@@ -177,15 +177,8 @@ class PHP_Repl
         }
         do {
             $prompt = $lines > 0 ? '> ' : $this->options['prompt'];
-<<<<<<< HEAD
-            if ($this->arguments) {
-                $line = array_shift($this->arguments);
-                echo "{$prompt}{$line} //from CLI\n";
-                $line .= "\n";
-=======
             if (count($_SERVER['argv'])) {
                 $line = array_shift($_SERVER['argv']);
->>>>>>> da0d4fa7bf1bccfaa2b80dafae47c153381a056c
             } elseif ($this->options['readline']) {
                 $line = readline($prompt);
             } else {
